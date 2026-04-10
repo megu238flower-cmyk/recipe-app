@@ -26,9 +26,10 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); }
-#app { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+#app { display: flex; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
 
-.sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); display: flex; flex-direction: column; flex-shrink: 0; }
+/* ── Sidebar ── */
+.sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); display: flex; flex-direction: column; flex-shrink: 0; z-index: 1; }
 .sidebar-header { padding: 40px 20px 20px; border-bottom: 1px solid var(--border); }
 .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); }
 .sidebar-count { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
@@ -44,62 +45,70 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 .sidebar-add { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; color: var(--text-muted); border: 1px dashed var(--border); transition: all 0.15s; background: none; font-family: 'Noto Sans JP', sans-serif; width: 100%; }
 .sidebar-add:hover { color: var(--accent); border-color: var(--accent); }
 
-.list-panel { width: var(--list-w); background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-.list-header { padding: 40px 20px 14px; border-bottom: 1px solid var(--border); }
-.list-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; }
+/* ── List panel ── */
+.list-panel { flex: 1; background: var(--bg); display: flex; flex-direction: column; overflow: hidden; }
+.list-header { padding: 40px 28px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; }
+.list-header h2 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; }
 .list-header-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-.list-search { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.search-input { width: 100%; padding: 9px 14px 9px 36px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; font-family: 'Noto Sans JP', sans-serif; color: var(--text); outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238C8880' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
+.list-search { padding: 14px 28px; border-bottom: 1px solid var(--border); }
+.search-input { width: 100%; padding: 10px 16px 10px 40px; border-radius: 100px; border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-family: 'Noto Sans JP', sans-serif; color: var(--text); outline: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238C8880' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 14px center; }
 .search-input:focus { border-color: var(--accent); outline: none; }
-.list-scroll { flex: 1; overflow-y: auto; }
-.list-item { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.12s; align-items: center; }
-.list-item:hover { background: var(--surface); }
-.list-item.active { background: var(--accent-light); border-left: 3px solid var(--accent); }
-.list-item-img { width: 52px; height: 52px; border-radius: var(--radius-sm); background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; overflow: hidden; }
-.list-item-img img { width: 100%; height: 100%; object-fit: cover; }
-.list-item-body { flex: 1; min-width: 0; }
-.list-item-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.list-item-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.list-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-.list-add-btn { margin: 12px 16px; padding: 11px; border-radius: var(--radius-sm); border: 1px dashed var(--border); background: none; font-size: 13px; font-family: 'Noto Sans JP', sans-serif; color: var(--text-muted); cursor: pointer; width: calc(100% - 32px); transition: all 0.15s; }
+.list-scroll { flex: 1; overflow-y: auto; padding: 16px 28px; }
+.recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.recipe-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+.recipe-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+.recipe-card:active { transform: scale(0.98); }
+.card-img { width: 100%; height: 150px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 44px; overflow: hidden; }
+.card-img img { width: 100%; height: 100%; object-fit: cover; }
+.card-body { padding: 12px 14px 14px; }
+.card-cat { font-size: 11px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
+.card-name { font-size: 15px; font-weight: 500; }
+.card-desc { font-size: 12px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+.list-add-btn { margin-top: 20px; padding: 13px; border-radius: var(--radius-sm); border: 1px dashed var(--border); background: none; font-size: 14px; font-family: 'Noto Sans JP', sans-serif; color: var(--text-muted); cursor: pointer; width: 100%; transition: all 0.15s; }
 .list-add-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-.list-empty { padding: 40px 16px; text-align: center; color: var(--text-muted); font-size: 13px; }
+.list-empty { padding: 60px 20px; text-align: center; color: var(--text-muted); font-size: 14px; }
 
-.detail-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.detail-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 12px; }
-.detail-empty-icon { font-size: 48px; opacity: 0.4; }
+/* ── Full-screen detail ── */
+.detail-fullscreen {
+  position: absolute; inset: 0; background: var(--surface);
+  display: flex; flex-direction: column; z-index: 10;
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+.detail-topbar { display: flex; align-items: center; gap: 14px; padding: 16px 28px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+.back-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 100px; border: 1px solid var(--border); background: none; font-size: 14px; font-family: 'Noto Sans JP', sans-serif; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.back-btn:hover { border-color: var(--text); color: var(--text); }
+.detail-topbar-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 400; flex: 1; }
+.detail-topbar-actions { display: flex; gap: 8px; }
+.icon-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.15s; }
+.icon-btn:hover { background: var(--border); }
+
 .detail-scroll { flex: 1; overflow-y: auto; }
-.detail-hero { width: 100%; height: 260px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 80px; overflow: hidden; position: relative; }
+.detail-hero { width: 100%; height: 320px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 90px; overflow: hidden; }
 .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
-.detail-actions-bar { position: absolute; top: 16px; right: 16px; display: flex; gap: 8px; }
-.icon-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.9); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.icon-btn:hover { background: white; }
-.detail-content { padding: 24px 36px 60px; max-width: 760px; }
-.detail-cat-badge { display: inline-block; padding: 4px 12px; border-radius: 100px; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 500; margin-bottom: 10px; }
-.detail-title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 400; line-height: 1.2; }
-.detail-desc { font-size: 14px; color: var(--text-muted); margin-top: 10px; line-height: 1.8; max-width: 560px; }
-.detail-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
-.detail-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-.section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
-
-/* Ingredients */
-.ingredient-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.detail-content { max-width: 900px; margin: 0 auto; padding: 32px 48px 80px; }
+.detail-cat-badge { display: inline-block; padding: 4px 14px; border-radius: 100px; background: var(--accent-light); color: var(--accent); font-size: 12px; font-weight: 500; margin-bottom: 12px; }
+.detail-title { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 400; line-height: 1.2; }
+.detail-desc { font-size: 15px; color: var(--text-muted); margin-top: 12px; line-height: 1.9; max-width: 640px; }
+.detail-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+.detail-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+.ingredient-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .ingredient-item:last-child { border-bottom: none; }
-.ingredient-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-.ingredient-photo { width: 100%; border-radius: var(--radius-sm); margin-top: 6px; overflow: hidden; }
-.ingredient-photo img { width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--radius-sm); }
-
-/* Steps */
-.step-item { display: flex; gap: 14px; margin-bottom: 20px; }
-.step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: white; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.ingredient-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.ingredient-photo { width: 100%; border-radius: var(--radius-sm); margin: 6px 0; overflow: hidden; }
+.ingredient-photo img { width: 100%; max-height: 220px; object-fit: cover; border-radius: var(--radius-sm); }
+.step-item { display: flex; gap: 16px; margin-bottom: 24px; }
+.step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: white; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
 .step-body { flex: 1; }
-.step-text { font-size: 14px; line-height: 1.8; }
-.step-photo { margin-top: 10px; border-radius: var(--radius-sm); overflow: hidden; }
-.step-photo img { width: 100%; max-height: 220px; object-fit: cover; border-radius: var(--radius-sm); }
+.step-text { font-size: 15px; line-height: 1.8; }
+.step-photo { margin-top: 12px; border-radius: var(--radius-sm); overflow: hidden; }
+.step-photo img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--radius-sm); }
 
-/* Modal */
+/* ── Modal ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.modal { background: var(--surface); border-radius: 20px; width: 600px; max-height: 88vh; overflow-y: auto; }
+.modal { background: var(--surface); border-radius: 20px; width: 620px; max-height: 88vh; overflow-y: auto; }
 .modal-header { padding: 24px 28px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 1; }
 .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; }
 .modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 18px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
@@ -110,26 +119,20 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 .form-input:focus { border-color: var(--accent); }
 .form-textarea { resize: vertical; min-height: 72px; line-height: 1.7; }
 .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C8880' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-color: var(--bg); padding-right: 36px; }
-
-/* Photo upload */
 .photo-upload-area { border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--bg); position: relative; }
 .photo-upload-area:hover { border-color: var(--accent); background: var(--accent-light); }
 .photo-upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .photo-upload-icon { font-size: 24px; margin-bottom: 4px; }
 .photo-upload-label { font-size: 12px; color: var(--text-muted); }
-.photo-preview { position: relative; margin-top: 8px; border-radius: var(--radius-sm); overflow: hidden; }
+.photo-preview { position: relative; margin-top: 8px; }
 .photo-preview img { width: 100%; max-height: 160px; object-fit: cover; border-radius: var(--radius-sm); display: block; }
 .photo-preview-remove { position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,0,0,0.5); color: white; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-
-/* Toggle tabs for text/photo */
 .toggle-tabs { display: flex; background: var(--bg); border-radius: var(--radius-sm); padding: 3px; gap: 2px; margin-bottom: 10px; border: 1px solid var(--border); }
 .toggle-tab { flex: 1; padding: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: none; background: none; border-radius: 6px; color: var(--text-muted); font-family: 'Noto Sans JP', sans-serif; transition: all 0.15s; }
 .toggle-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-
-/* Dynamic list */
 .dynamic-list { display: flex; flex-direction: column; gap: 12px; }
 .dynamic-card { background: var(--bg); border-radius: var(--radius-sm); padding: 12px; border: 1px solid var(--border); }
-.dynamic-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.dynamic-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .dynamic-card-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: white; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .dynamic-card-title { font-size: 12px; font-weight: 500; color: var(--text-muted); flex: 1; }
 .remove-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: none; color: var(--text-muted); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -148,11 +151,12 @@ const EMOJIS={'牛肉':'🥩','豚肉':'🐷','鶏肉':'🐔','魚介類':'🐟'
 const em=c=>EMOJIS[c]||'🍳';
 
 let S={
+  view:'list', // 'list' | 'detail'
   selCat:'すべて', selId:null, search:'', modal:null,
   categories:['牛肉','豚肉','鶏肉','魚介類','野菜','お菓子','その他'],
   recipes:[
     {id:1,name:'肉じゃが',description:'定番の家庭料理。牛肉とじゃがいもを甘辛く煮込んだほっこりする一品。',category:'牛肉',imageData:'',
-     ingredients:[{type:'text',text:'牛薄切り肉 200g',photoData:''},{type:'text',text:'じゃがいも 3個',photoData:''},{type:'text',text:'玉ねぎ 1個',photoData:''},{type:'text',text:'醤油 大さじ3・みりん 大さじ3・砂糖 大さじ2',photoData:''}],
+     ingredients:[{type:'text',text:'牛薄切り肉 200g',photoData:''},{type:'text',text:'じゃがいも 3個',photoData:''},{type:'text',text:'玉ねぎ 1個・にんじん 1本',photoData:''},{type:'text',text:'醤油 大さじ3・みりん 大さじ3・砂糖 大さじ2',photoData:''}],
      steps:[{text:'牛肉は一口大に切り、野菜も食べやすい大きさにカットする。',photoData:''},{text:'鍋に油を熱し、牛肉を炒める。色が変わったら野菜を加えてさらに炒める。',photoData:''},{text:'だし汁と調味料を加え、落し蓋をして中火で15分煮込む。',photoData:''},{text:'じゃがいもに竹串がスッと通ったら完成。',photoData:''}]},
     {id:2,name:'鶏のから揚げ',description:'サクサクジューシーな揚げ物。下味をしっかりつけるのがポイント。',category:'鶏肉',imageData:'',
      ingredients:[{type:'text',text:'鶏もも肉 300g',photoData:''},{type:'text',text:'醤油 大さじ2・酒 大さじ1',photoData:''},{type:'text',text:'片栗粉 大さじ4',photoData:''}],
@@ -168,28 +172,19 @@ let FD={};
 const ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e;};
 const tx=(t,c,s)=>{const e=ce(t,c);e.textContent=s;return e;};
 const catCnt=c=>c==='すべて'?S.recipes.length:S.recipes.filter(r=>r.category===c).length;
-
 function filtered(){
   let l=S.selCat==='すべて'?[...S.recipes]:S.recipes.filter(r=>r.category===S.selCat);
   if(S.search.trim()){const q=S.search.trim().toLowerCase();l=l.filter(r=>r.name.toLowerCase().includes(q)||r.description.toLowerCase().includes(q));}
   return l;
 }
-
-// Read file as base64 data URL
-function readFile(file){
-  return new Promise(res=>{
-    const reader=new FileReader();
-    reader.onload=e=>res(e.target.result);
-    reader.readAsDataURL(file);
-  });
-}
+function readFile(file){return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});}
 
 function render(){
   const app=document.getElementById('app');
   app.innerHTML='';
   app.appendChild(buildSidebar());
-  app.appendChild(buildList());
-  app.appendChild(buildDetail());
+  app.appendChild(buildListPanel());
+  if(S.view==='detail'&&S.selId) app.appendChild(buildDetailFullscreen());
   if(S.modal==='recipe') app.appendChild(buildRecipeModal());
   if(S.modal==='cat') app.appendChild(buildCatModal());
 }
@@ -209,7 +204,7 @@ function buildSidebar(){
     item.appendChild(document.createTextNode(c));
     const cnt=ce('span','cnt');cnt.textContent=catCnt(c);
     item.appendChild(cnt);
-    item.onclick=()=>{S.selCat=c;S.selId=null;render();};
+    item.onclick=()=>{S.selCat=c;S.view='list';render();};
     scroll.appendChild(item);
   });
   el.appendChild(scroll);
@@ -221,12 +216,13 @@ function buildSidebar(){
   return el;
 }
 
-function buildList(){
+function buildListPanel(){
   const el=ce('div','list-panel');
   const hdr=ce('div','list-header');
-  hdr.appendChild(tx('h2','',S.selCat==='すべて'?'すべてのレシピ':S.selCat));
-  const fl=filtered();
-  hdr.appendChild(tx('div','list-header-sub',fl.length+'件'));
+  const left=ce('div','');
+  left.appendChild(tx('h2','',S.selCat==='すべて'?'すべてのレシピ':S.selCat));
+  left.appendChild(tx('div','list-header-sub',filtered().length+'件'));
+  hdr.appendChild(left);
   el.appendChild(hdr);
   const sb=ce('div','list-search');
   const inp=ce('input','search-input');
@@ -234,58 +230,64 @@ function buildList(){
   inp.oninput=()=>{S.search=inp.value;render();};
   sb.appendChild(inp);el.appendChild(sb);
   const scroll=ce('div','list-scroll');
+  const fl=filtered();
   if(fl.length===0){scroll.appendChild(tx('div','list-empty','レシピがありません'));}
-  else fl.forEach(r=>{
-    const item=ce('div','list-item'+(r.id===S.selId?' active':''));
-    const imgW=ce('div','list-item-img');
-    if(r.imageData){const img=document.createElement('img');img.src=r.imageData;imgW.appendChild(img);}
-    else imgW.textContent=em(r.category);
-    item.appendChild(imgW);
-    const body=ce('div','list-item-body');
-    body.appendChild(tx('div','list-item-name',r.name));
-    body.appendChild(tx('div','list-item-desc',r.description));
-    body.appendChild(tx('div','list-item-meta','材料'+r.ingredients.length+'種・手順'+r.steps.length+'ステップ'));
-    item.appendChild(body);
-    item.onclick=()=>{S.selId=r.id;render();};
-    scroll.appendChild(item);
-  });
-  el.appendChild(scroll);
+  else{
+    const grid=ce('div','recipe-grid');
+    fl.forEach(r=>{
+      const card=ce('div','recipe-card');
+      const imgW=ce('div','card-img');
+      if(r.imageData){const img=document.createElement('img');img.src=r.imageData;imgW.appendChild(img);}
+      else imgW.textContent=em(r.category);
+      card.appendChild(imgW);
+      const body=ce('div','card-body');
+      body.appendChild(tx('div','card-cat',r.category));
+      body.appendChild(tx('div','card-name',r.name));
+      body.appendChild(tx('div','card-desc',r.description));
+      body.appendChild(tx('div','card-meta','材料'+r.ingredients.length+'種・手順'+r.steps.length+'ステップ'));
+      card.appendChild(body);
+      card.onclick=()=>{S.selId=r.id;S.view='detail';render();};
+      grid.appendChild(card);
+    });
+    scroll.appendChild(grid);
+  }
   const addBtn=ce('button','list-add-btn');
   addBtn.textContent='＋ 新しいレシピを追加';
   addBtn.onclick=()=>{
     FD={id:null,name:'',description:'',category:S.selCat!=='すべて'?S.selCat:S.categories[0]||'その他',imageData:'',
-        ingredients:[{type:'text',text:'',photoData:''}],
-        steps:[{text:'',photoData:''}]};
+        ingredients:[{type:'text',text:'',photoData:''}],steps:[{text:'',photoData:''}]};
     S.modal='recipe';render();
   };
-  el.appendChild(addBtn);
+  scroll.appendChild(addBtn);
+  el.appendChild(scroll);
   return el;
 }
 
-function buildDetail(){
-  const el=ce('div','detail-panel');
-  const r=S.selId?S.recipes.find(x=>x.id===S.selId):null;
-  if(!r){
-    const empty=ce('div','detail-empty');
-    const icon=ce('div','detail-empty-icon');icon.textContent='🍽️';
-    empty.appendChild(icon);empty.appendChild(tx('p','','レシピを選んでください'));
-    el.appendChild(empty);return el;
-  }
+function buildDetailFullscreen(){
+  const r=S.recipes.find(x=>x.id===S.selId);
+  if(!r) return ce('div','');
+  const el=ce('div','detail-fullscreen');
+
+  // Top bar
+  const topbar=ce('div','detail-topbar');
+  const back=ce('button','back-btn');
+  back.innerHTML='← 一覧に戻る';
+  back.onclick=()=>{S.view='list';render();};
+  topbar.appendChild(back);
+  topbar.appendChild(tx('span','detail-topbar-title',r.name));
+  const acts=ce('div','detail-topbar-actions');
+  const eb=ce('button','icon-btn');eb.textContent='✏️';eb.title='編集';
+  eb.onclick=()=>{FD={...r,ingredients:r.ingredients.map(i=>({...i})),steps:r.steps.map(s=>({...s}))};S.modal='recipe';render();};
+  const db=ce('button','icon-btn');db.textContent='🗑️';db.title='削除';
+  db.onclick=()=>{if(confirm('このレシピを削除しますか？')){S.recipes=S.recipes.filter(x=>x.id!==r.id);S.selId=null;S.view='list';render();}};
+  acts.appendChild(eb);acts.appendChild(db);topbar.appendChild(acts);
+  el.appendChild(topbar);
+
+  // Scroll content
   const scroll=ce('div','detail-scroll');
   const hero=ce('div','detail-hero');
   if(r.imageData){const img=document.createElement('img');img.src=r.imageData;hero.appendChild(img);}
   else hero.textContent=em(r.category);
-  const bar=ce('div','detail-actions-bar');
-  const eb=ce('button','icon-btn');eb.textContent='✏️';eb.title='編集';
-  eb.onclick=()=>{
-    FD={...r,
-        ingredients:r.ingredients.map(i=>({...i})),
-        steps:r.steps.map(s=>({...s}))};
-    S.modal='recipe';render();
-  };
-  const db=ce('button','icon-btn');db.textContent='🗑️';db.title='削除';
-  db.onclick=()=>{if(confirm('このレシピを削除しますか？')){S.recipes=S.recipes.filter(x=>x.id!==r.id);S.selId=null;render();}};
-  bar.appendChild(eb);bar.appendChild(db);hero.appendChild(bar);
   scroll.appendChild(hero);
 
   const cont=ce('div','detail-content');
@@ -304,10 +306,10 @@ function buildDetail(){
       const wrap=ce('div','ingredient-photo');
       const img=document.createElement('img');img.src=ing.photoData;
       wrap.appendChild(img);ingCol.appendChild(wrap);
-    } else {
+    } else if(ing.text){
       const row=ce('div','ingredient-item');
       row.appendChild(ce('span','ingredient-dot'));
-      row.appendChild(document.createTextNode(ing.text||''));
+      row.appendChild(document.createTextNode(ing.text));
       ingCol.appendChild(row);
     }
   });
@@ -334,27 +336,21 @@ function buildDetail(){
   return el;
 }
 
-function photoUploadWidget(currentData, onSelect, label){
+function photoWidget(currentData, onSelect, label){
   const wrap=ce('div','');
   if(currentData){
     const prev=ce('div','photo-preview');
     const img=document.createElement('img');img.src=currentData;
     const rm=ce('button','photo-preview-remove');rm.textContent='×';
     rm.onclick=e=>{e.stopPropagation();onSelect('');};
-    prev.appendChild(img);prev.appendChild(rm);
-    wrap.appendChild(prev);
+    prev.appendChild(img);prev.appendChild(rm);wrap.appendChild(prev);
   } else {
     const area=ce('div','photo-upload-area');
-    const fileInp=ce('input','');
-    fileInp.type='file';fileInp.accept='image/*';
-    fileInp.onchange=async e=>{
-      const file=e.target.files[0];
-      if(file){const data=await readFile(file);onSelect(data);}
-    };
+    const fi=ce('input','');fi.type='file';fi.accept='image/*';
+    fi.onchange=async e=>{const f=e.target.files[0];if(f){const d=await readFile(f);onSelect(d);}};
     const icon=ce('div','photo-upload-icon');icon.textContent='📷';
     const lbl=tx('div','photo-upload-label',label||'タップして写真を選択');
-    area.appendChild(fileInp);area.appendChild(icon);area.appendChild(lbl);
-    wrap.appendChild(area);
+    area.appendChild(fi);area.appendChild(icon);area.appendChild(lbl);wrap.appendChild(area);
   }
   return wrap;
 }
@@ -363,12 +359,10 @@ function buildRecipeModal(){
   const overlay=ce('div','modal-overlay');
   overlay.onclick=e=>{if(e.target===overlay){S.modal=null;render();}};
   const modal=ce('div','modal');
-
   const mhdr=ce('div','modal-header');
   mhdr.appendChild(tx('h3','',FD.id===null?'新しいレシピ':'レシピを編集'));
   const cb=ce('button','modal-close');cb.textContent='×';cb.onclick=()=>{S.modal=null;render();};
   mhdr.appendChild(cb);modal.appendChild(mhdr);
-
   const body=ce('div','modal-body');
 
   function field(lbl,el){const r=ce('div','form-row');r.appendChild(tx('label','form-label',lbl));r.appendChild(el);return r;}
@@ -382,10 +376,9 @@ function buildRecipeModal(){
   sel.onchange=()=>FD.category=sel.value;
   body.appendChild(field('カテゴリ',sel));
 
-  // 完成写真
   const heroRow=ce('div','form-row');
   heroRow.appendChild(tx('label','form-label','完成写真'));
-  heroRow.appendChild(photoUploadWidget(FD.imageData,data=>{FD.imageData=data;S.modal='recipe';render();},'写真アプリから選択'));
+  heroRow.appendChild(photoWidget(FD.imageData,d=>{FD.imageData=d;S.modal='recipe';render();},'写真アプリから選択'));
   body.appendChild(heroRow);
 
   // 材料
@@ -394,34 +387,27 @@ function buildRecipeModal(){
   const ingList=ce('div','dynamic-list');
   FD.ingredients.forEach((ing,i)=>{
     const card=ce('div','dynamic-card');
-    const cardHdr=ce('div','dynamic-card-header');
+    const ch=ce('div','dynamic-card-header');
     const num=ce('div','dynamic-card-num');num.textContent=i+1;
-    cardHdr.appendChild(num);
-    cardHdr.appendChild(tx('span','dynamic-card-title','材料 '+(i+1)));
-    const rb=ce('button','remove-btn');rb.textContent='×';
-    rb.onclick=()=>{FD.ingredients.splice(i,1);S.modal='recipe';render();};
-    cardHdr.appendChild(rb);card.appendChild(cardHdr);
-
-    // Toggle: text or photo
+    ch.appendChild(num);ch.appendChild(tx('span','dynamic-card-title','材料 '+(i+1)));
+    const rb=ce('button','remove-btn');rb.textContent='×';rb.onclick=()=>{FD.ingredients.splice(i,1);S.modal='recipe';render();};
+    ch.appendChild(rb);card.appendChild(ch);
     const tabs=ce('div','toggle-tabs');
     const t1=ce('button','toggle-tab'+(ing.type==='text'?' active':''));t1.textContent='テキスト';
     const t2=ce('button','toggle-tab'+(ing.type==='photo'?' active':''));t2.textContent='写真';
     t1.onclick=()=>{ing.type='text';S.modal='recipe';render();};
     t2.onclick=()=>{ing.type='photo';S.modal='recipe';render();};
     tabs.appendChild(t1);tabs.appendChild(t2);card.appendChild(tabs);
-
     if(ing.type==='text'){
-      const e=ce('input','form-input');e.type='text';e.value=ing.text;e.placeholder='例：鶏もも肉 200g';
-      e.oninput=()=>ing.text=e.value;card.appendChild(e);
+      const e=ce('input','form-input');e.type='text';e.value=ing.text;e.placeholder='例：鶏もも肉 200g';e.oninput=()=>ing.text=e.value;card.appendChild(e);
     } else {
-      card.appendChild(photoUploadWidget(ing.photoData,data=>{ing.photoData=data;S.modal='recipe';render();},'材料の写真を選択'));
+      card.appendChild(photoWidget(ing.photoData,d=>{ing.photoData=d;S.modal='recipe';render();},'材料の写真を選択'));
     }
     ingList.appendChild(card);
   });
-  const addIngBtn=ce('button','add-link');addIngBtn.textContent='＋ 材料を追加';
-  addIngBtn.onclick=()=>{FD.ingredients.push({type:'text',text:'',photoData:''});S.modal='recipe';render();};
-  ingRow.appendChild(ingList);ingRow.appendChild(addIngBtn);
-  body.appendChild(ingRow);
+  const aib=ce('button','add-link');aib.textContent='＋ 材料を追加';
+  aib.onclick=()=>{FD.ingredients.push({type:'text',text:'',photoData:''});S.modal='recipe';render();};
+  ingRow.appendChild(ingList);ingRow.appendChild(aib);body.appendChild(ingRow);
 
   // 手順
   const stRow=ce('div','form-row');
@@ -429,28 +415,22 @@ function buildRecipeModal(){
   const stList=ce('div','dynamic-list');
   FD.steps.forEach((step,i)=>{
     const card=ce('div','dynamic-card');
-    const cardHdr=ce('div','dynamic-card-header');
+    const ch=ce('div','dynamic-card-header');
     const num=ce('div','dynamic-card-num');num.textContent=i+1;
-    cardHdr.appendChild(num);
-    cardHdr.appendChild(tx('span','dynamic-card-title','手順 '+(i+1)));
-    const rb=ce('button','remove-btn');rb.textContent='×';
-    rb.onclick=()=>{FD.steps.splice(i,1);S.modal='recipe';render();};
-    cardHdr.appendChild(rb);card.appendChild(cardHdr);
+    ch.appendChild(num);ch.appendChild(tx('span','dynamic-card-title','手順 '+(i+1)));
+    const rb=ce('button','remove-btn');rb.textContent='×';rb.onclick=()=>{FD.steps.splice(i,1);S.modal='recipe';render();};
+    ch.appendChild(rb);card.appendChild(ch);
     const ta2=ce('textarea','form-input form-textarea');ta2.style.minHeight='60px';
-    ta2.value=step.text;ta2.placeholder='手順の説明を入力…';
-    ta2.oninput=()=>step.text=ta2.value;
+    ta2.value=step.text;ta2.placeholder='手順の説明を入力…';ta2.oninput=()=>step.text=ta2.value;
     card.appendChild(ta2);
-    // Step photo
-    const photoLbl=tx('div','form-label','手順の写真（任意）');
-    photoLbl.style.marginTop='10px';
-    card.appendChild(photoLbl);
-    card.appendChild(photoUploadWidget(step.photoData,data=>{step.photoData=data;S.modal='recipe';render();},'手順の写真を選択'));
+    const pl=tx('div','form-label','手順の写真（任意）');pl.style.marginTop='10px';
+    card.appendChild(pl);
+    card.appendChild(photoWidget(step.photoData,d=>{step.photoData=d;S.modal='recipe';render();},'手順の写真を選択'));
     stList.appendChild(card);
   });
-  const addStBtn=ce('button','add-link');addStBtn.textContent='＋ 手順を追加';
-  addStBtn.onclick=()=>{FD.steps.push({text:'',photoData:''});S.modal='recipe';render();};
-  stRow.appendChild(stList);stRow.appendChild(addStBtn);
-  body.appendChild(stRow);
+  const asb=ce('button','add-link');asb.textContent='＋ 手順を追加';
+  asb.onclick=()=>{FD.steps.push({text:'',photoData:''});S.modal='recipe';render();};
+  stRow.appendChild(stList);stRow.appendChild(asb);body.appendChild(stRow);
 
   modal.appendChild(body);
   const footer=ce('div','modal-footer');
@@ -493,8 +473,8 @@ function saveRecipe(){
   if(!FD.name.trim()){alert('料理名を入力してください');return;}
   FD.ingredients=FD.ingredients.filter(i=>i.type==='photo'?i.photoData:i.text.trim());
   FD.steps=FD.steps.filter(s=>s.text.trim()||s.photoData);
-  if(FD.id===null){const n={...FD,id:S.nextId++};S.recipes.push(n);S.selId=n.id;}
-  else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;}
+  if(FD.id===null){const n={...FD,id:S.nextId++};S.recipes.push(n);S.selId=n.id;S.view='detail';}
+  else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;S.view='detail';}
   S.modal=null;render();
 }
 render();
