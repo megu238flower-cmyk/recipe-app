@@ -41,7 +41,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 .sidebar-item.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 .sidebar-item .em { font-size: 16px; width: 22px; text-align: center; }
 .sidebar-item .cnt { margin-left: auto; font-size: 11px; color: var(--text-muted); }
-.sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+.sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
 .sidebar-add { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; color: var(--text-muted); border: 1px dashed var(--border); transition: all 0.15s; background: none; font-family: 'Noto Sans JP', sans-serif; width: 100%; }
 .sidebar-add:hover { color: var(--accent); border-color: var(--accent); }
 
@@ -219,7 +219,42 @@ function buildSidebar(){
   const btn=ce('button','sidebar-add');
   btn.innerHTML='<span style="font-size:16px;margin-right:4px">+</span>カテゴリを追加';
   btn.onclick=()=>{S.modal='cat';render();};
-  footer.appendChild(btn);el.appendChild(footer);
+  footer.appendChild(btn);
+  const backupBtn=ce('button','sidebar-add');
+  backupBtn.innerHTML='<span style="font-size:16px;margin-right:4px">💾</span>バックアップ';
+  backupBtn.onclick=()=>{
+    const data=JSON.stringify({categories:S.categories,recipes:S.recipes},null,2);
+    const a=document.createElement('a');
+    a.href='data:application/json;charset=utf-8,'+encodeURIComponent(data);
+    a.download='recipes-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    a.click();
+  };
+  footer.appendChild(backupBtn);
+  const restoreBtn=ce('button','sidebar-add');
+  restoreBtn.innerHTML='<span style="font-size:16px;margin-right:4px">📂</span>復元';
+  restoreBtn.onclick=()=>{
+    const inp=document.createElement('input');
+    inp.type='file';inp.accept='.json';
+    inp.onchange=e=>{
+      const file=e.target.files[0];if(!file)return;
+      const reader=new FileReader();
+      reader.onload=ev=>{
+        try{
+          const d=JSON.parse(ev.target.result);
+          if(d.categories&&d.recipes){
+            S.categories=d.categories;S.recipes=d.recipes;
+            S.nextId=Math.max(0,...d.recipes.map(r=>r.id||0))+1;
+            S.selCat='すべて';S.selId=null;S.view='list';
+            render();
+          }else{alert('バックアップファイルの形式が正しくありません。');}
+        }catch{alert('ファイルの読み込みに失敗しました。');}
+      };
+      reader.readAsText(file);
+    };
+    inp.click();
+  };
+  footer.appendChild(restoreBtn);
+  el.appendChild(footer);
   return el;
 }
 
