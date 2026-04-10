@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Recipes</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #F7F5F0;
@@ -174,7 +175,9 @@ let S={
   ],
   nextId:4
 };
-(()=>{try{const d=localStorage.getItem('recipesData');if(d){const p=JSON.parse(d);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}}catch(e){}})();
+const _sb=window.supabase.createClient('https://twkrqtzelyjecqpjgfib.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3JxdHplbHlqZWNxcGpnZmliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzUwNTgsImV4cCI6MjA5MTQxMTA1OH0.AM7GCMAHBsxGrLB1O1grjTu4Jd5tD6_FXK4wWEis06s');
+let _saveTimer;
+function saveToSupabase(){clearTimeout(_saveTimer);_saveTimer=setTimeout(()=>{_sb.from('app_data').upsert({id:1,data:{categories:S.categories,recipes:S.recipes,nextId:S.nextId}}).then();},500);}
 let FD={};
 
 const ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e;};
@@ -188,7 +191,7 @@ function filtered(){
 function readFile(file){return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});}
 
 function render(){
-  try{localStorage.setItem('recipesData',JSON.stringify({categories:S.categories,recipes:S.recipes,nextId:S.nextId}));}catch(e){}
+  saveToSupabase();
   const app=document.getElementById('app');
   app.innerHTML='';
   app.appendChild(buildSidebar());
@@ -563,7 +566,7 @@ function saveRecipe(){
   else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;S.view='detail';}
   S.modal=null;render();
 }
-render();
+(async()=>{const{data}=await _sb.from('app_data').select('data').eq('id',1).single();if(data&&data.data){const d=data.data;if(d.categories)S.categories=d.categories;if(d.recipes)S.recipes=d.recipes;if(d.nextId)S.nextId=d.nextId;}render();})();
 </script>
 </body>
 </html>
