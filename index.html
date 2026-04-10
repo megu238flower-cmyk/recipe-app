@@ -98,13 +98,20 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 .ingredient-item:last-child { border-bottom: none; }
 .ingredient-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 .ingredient-photo { width: 100%; border-radius: var(--radius-sm); margin: 6px 0; overflow: hidden; }
-.ingredient-photo img { width: 100%; max-height: 220px; object-fit: cover; border-radius: var(--radius-sm); }
+.ingredient-photo img { width: 100%; height: auto; border-radius: var(--radius-sm); }
 .step-item { display: flex; gap: 16px; margin-bottom: 24px; }
 .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: white; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
 .step-body { flex: 1; }
 .step-text { font-size: 15px; line-height: 1.8; }
-.step-photo { margin-top: 12px; border-radius: var(--radius-sm); overflow: hidden; }
-.step-photo img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--radius-sm); }
+.step-photos { display: flex; gap: 10px; overflow-x: auto; margin-top: 12px; padding-bottom: 6px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.step-photos::-webkit-scrollbar { height: 4px; }
+.step-photos::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.step-photo-thumb { flex-shrink: 0; width: 180px; height: 140px; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; border: 1px solid var(--border); }
+.step-photo-thumb img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.15s; }
+.step-photo-thumb:hover img { opacity: 0.85; }
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 200; cursor: pointer; }
+.lightbox img { max-width: 95vw; max-height: 92vh; object-fit: contain; border-radius: var(--radius-sm); }
+.lightbox-close { position: absolute; top: 20px; right: 24px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; color: white; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
 /* ── Modal ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; }
@@ -157,13 +164,13 @@ let S={
   recipes:[
     {id:1,name:'肉じゃが',description:'定番の家庭料理。牛肉とじゃがいもを甘辛く煮込んだほっこりする一品。',category:'牛肉',imageData:'',
      ingredients:[{type:'text',text:'牛薄切り肉 200g',photoData:''},{type:'text',text:'じゃがいも 3個',photoData:''},{type:'text',text:'玉ねぎ 1個・にんじん 1本',photoData:''},{type:'text',text:'醤油 大さじ3・みりん 大さじ3・砂糖 大さじ2',photoData:''}],
-     steps:[{text:'牛肉は一口大に切り、野菜も食べやすい大きさにカットする。',photoData:''},{text:'鍋に油を熱し、牛肉を炒める。色が変わったら野菜を加えてさらに炒める。',photoData:''},{text:'だし汁と調味料を加え、落し蓋をして中火で15分煮込む。',photoData:''},{text:'じゃがいもに竹串がスッと通ったら完成。',photoData:''}]},
+     steps:[{text:'牛肉は一口大に切り、野菜も食べやすい大きさにカットする。',photos:[]},{text:'鍋に油を熱し、牛肉を炒める。色が変わったら野菜を加えてさらに炒める。',photos:[]},{text:'だし汁と調味料を加え、落し蓋をして中火で15分煮込む。',photos:[]},{text:'じゃがいもに竹串がスッと通ったら完成。',photos:[]}]},
     {id:2,name:'鶏のから揚げ',description:'サクサクジューシーな揚げ物。下味をしっかりつけるのがポイント。',category:'鶏肉',imageData:'',
      ingredients:[{type:'text',text:'鶏もも肉 300g',photoData:''},{type:'text',text:'醤油 大さじ2・酒 大さじ1',photoData:''},{type:'text',text:'片栗粉 大さじ4',photoData:''}],
-     steps:[{text:'鶏肉を一口大に切り、醤油・酒・すりおろしにんにく・しょうがで30分漬け込む。',photoData:''},{text:'片栗粉をまぶし、余分な粉をはたく。',photoData:''},{text:'170℃の油で5分揚げ、取り出して2分休ませる。',photoData:''},{text:'180℃に上げてさらに2分揚げ、カリッとさせたら完成。',photoData:''}]},
+     steps:[{text:'鶏肉を一口大に切り、醤油・酒・すりおろしにんにく・しょうがで30分漬け込む。',photos:[]},{text:'片栗粉をまぶし、余分な粉をはたく。',photos:[]},{text:'170℃の油で5分揚げ、取り出して2分休ませる。',photos:[]},{text:'180℃に上げてさらに2分揚げ、カリッとさせたら完成。',photos:[]}]},
     {id:3,name:'鮭のホイル焼き',description:'野菜と一緒にホイルで包んで蒸し焼きに。ヘルシーで後片付けも楽。',category:'魚介類',imageData:'',
      ingredients:[{type:'text',text:'鮭の切り身 2切れ',photoData:''},{type:'text',text:'玉ねぎ 1/2個・しめじ 1/2袋',photoData:''},{type:'text',text:'バター 10g・醤油 小さじ1',photoData:''}],
-     steps:[{text:'アルミホイルに玉ねぎとしめじを敷き、鮭をのせる。',photoData:''},{text:'塩こしょうを振り、バターをのせて醤油を回しかける。',photoData:''},{text:'ホイルをしっかり包み、魚焼きグリルで10〜12分焼く。',photoData:''},{text:'ホイルを開いてレモンを添えたら完成。',photoData:''}]}
+     steps:[{text:'アルミホイルに玉ねぎとしめじを敷き、鮭をのせる。',photos:[]},{text:'塩こしょうを振り、バターをのせて醤油を回しかける。',photos:[]},{text:'ホイルをしっかり包み、魚焼きグリルで10〜12分焼く。',photos:[]},{text:'ホイルを開いてレモンを添えたら完成。',photos:[]}]}
   ],
   nextId:4
 };
@@ -255,7 +262,7 @@ function buildListPanel(){
   addBtn.textContent='＋ 新しいレシピを追加';
   addBtn.onclick=()=>{
     FD={id:null,name:'',description:'',category:S.selCat!=='すべて'?S.selCat:S.categories[0]||'その他',imageData:'',
-        ingredients:[{type:'text',text:'',photoData:''}],steps:[{text:'',photoData:''}]};
+        ingredients:[{type:'text',text:'',photoData:''}],steps:[{text:'',photos:[]}]};
     S.modal='recipe';render();
   };
   scroll.appendChild(addBtn);
@@ -277,7 +284,7 @@ function buildDetailFullscreen(){
   topbar.appendChild(tx('span','detail-topbar-title',r.name));
   const acts=ce('div','detail-topbar-actions');
   const eb=ce('button','icon-btn');eb.textContent='✏️';eb.title='編集';
-  eb.onclick=()=>{FD={...r,ingredients:r.ingredients.map(i=>({...i})),steps:r.steps.map(s=>({...s}))};S.modal='recipe';render();};
+  eb.onclick=()=>{FD={...r,ingredients:r.ingredients.map(i=>({...i})),steps:r.steps.map(s=>({...s,photos:[...(s.photos||[])]}))};S.modal='recipe';render();};
   const db=ce('button','icon-btn');db.textContent='🗑️';db.title='削除';
   db.onclick=()=>{if(confirm('このレシピを削除しますか？')){S.recipes=S.recipes.filter(x=>x.id!==r.id);S.selId=null;S.view='list';render();}};
   acts.appendChild(eb);acts.appendChild(db);topbar.appendChild(acts);
@@ -324,10 +331,16 @@ function buildDetailFullscreen(){
     row.appendChild(num);
     const body=ce('div','step-body');
     body.appendChild(tx('p','step-text',s.text));
-    if(s.photoData){
-      const sp=ce('div','step-photo');
-      const img=document.createElement('img');img.src=s.photoData;
-      sp.appendChild(img);body.appendChild(sp);
+    if(s.photos&&s.photos.length>0){
+      const thumbs=ce('div','step-photos');
+      s.photos.forEach(src=>{
+        const th=ce('div','step-photo-thumb');
+        const img=document.createElement('img');img.src=src;
+        th.appendChild(img);
+        th.onclick=()=>openLightbox(src);
+        thumbs.appendChild(th);
+      });
+      body.appendChild(thumbs);
     }
     row.appendChild(body);stCol.appendChild(row);
   });
@@ -423,13 +436,38 @@ function buildRecipeModal(){
     const ta2=ce('textarea','form-input form-textarea');ta2.style.minHeight='60px';
     ta2.value=step.text;ta2.placeholder='手順の説明を入力…';ta2.oninput=()=>step.text=ta2.value;
     card.appendChild(ta2);
-    const pl=tx('div','form-label','手順の写真（任意）');pl.style.marginTop='10px';
+    const pl=tx('div','form-label','手順の写真（複数追加可）');pl.style.marginTop='10px';
     card.appendChild(pl);
-    card.appendChild(photoWidget(step.photoData,d=>{step.photoData=d;S.modal='recipe';render();},'手順の写真を選択'));
+    if(!step.photos) step.photos=[];
+    // Show existing photos
+    if(step.photos.length>0){
+      const prevRow=ce('div','');prevRow.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;';
+      step.photos.forEach((src,pi)=>{
+        const wrap=ce('div','photo-preview');wrap.style.cssText='position:relative;width:100px;flex-shrink:0;';
+        const img=document.createElement('img');img.src=src;img.style.cssText='width:100px;height:80px;object-fit:cover;border-radius:6px;display:block;';
+        const rm=ce('button','photo-preview-remove');rm.textContent='×';
+        rm.onclick=e=>{e.stopPropagation();step.photos.splice(pi,1);S.modal='recipe';render();};
+        wrap.appendChild(img);wrap.appendChild(rm);prevRow.appendChild(wrap);
+      });
+      card.appendChild(prevRow);
+    }
+    // Add photo button
+    const addPhotoArea=ce('div','photo-upload-area');
+    const fi=ce('input','');fi.type='file';fi.accept='image/*';fi.multiple=true;
+    fi.onchange=async e=>{
+      for(const f of Array.from(e.target.files)){
+        const d=await readFile(f);step.photos.push(d);
+      }
+      S.modal='recipe';render();
+    };
+    const icon=ce('div','photo-upload-icon');icon.textContent='📷';
+    const lbl=tx('div','photo-upload-label','写真を追加（複数選択可）');
+    addPhotoArea.appendChild(fi);addPhotoArea.appendChild(icon);addPhotoArea.appendChild(lbl);
+    card.appendChild(addPhotoArea);
     stList.appendChild(card);
   });
   const asb=ce('button','add-link');asb.textContent='＋ 手順を追加';
-  asb.onclick=()=>{FD.steps.push({text:'',photoData:''});S.modal='recipe';render();};
+  asb.onclick=()=>{FD.steps.push({text:'',photos:[]});S.modal='recipe';render();};
   stRow.appendChild(stList);stRow.appendChild(asb);body.appendChild(stRow);
 
   modal.appendChild(body);
@@ -469,10 +507,21 @@ function buildCatModal(){
   overlay.appendChild(modal);return overlay;
 }
 
+function openLightbox(src){
+  const lb=ce('div','lightbox');
+  const img=document.createElement('img');img.src=src;
+  const close=ce('button','lightbox-close');close.textContent='×';
+  close.onclick=e=>{e.stopPropagation();lb.remove();};
+  lb.onclick=()=>lb.remove();
+  img.onclick=e=>e.stopPropagation();
+  lb.appendChild(img);lb.appendChild(close);
+  document.getElementById('app').appendChild(lb);
+}
+
 function saveRecipe(){
   if(!FD.name.trim()){alert('料理名を入力してください');return;}
   FD.ingredients=FD.ingredients.filter(i=>i.type==='photo'?i.photoData:i.text.trim());
-  FD.steps=FD.steps.filter(s=>s.text.trim()||s.photoData);
+  FD.steps=FD.steps.filter(s=>s.text.trim()||(s.photos&&s.photos.length>0));
   if(FD.id===null){const n={...FD,id:S.nextId++};S.recipes.push(n);S.selId=n.id;S.view='detail';}
   else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;S.view='detail';}
   S.modal=null;render();
