@@ -162,24 +162,14 @@ let S={
   view:'list', // 'list' | 'detail'
   selCat:'すべて', selId:null, search:'', modal:null,
   categories:['牛肉','豚肉','鶏肉','魚介類','野菜','お菓子','その他'],
-  recipes:[
-    {id:1,name:'肉じゃが',description:'定番の家庭料理。牛肉とじゃがいもを甘辛く煮込んだほっこりする一品。',category:'牛肉',imageData:'',
-     ingredients:[{type:'text',text:'牛薄切り肉 200g',photoData:''},{type:'text',text:'じゃがいも 3個',photoData:''},{type:'text',text:'玉ねぎ 1個・にんじん 1本',photoData:''},{type:'text',text:'醤油 大さじ3・みりん 大さじ3・砂糖 大さじ2',photoData:''}],
-     steps:[{text:'牛肉は一口大に切り、野菜も食べやすい大きさにカットする。',photos:[]},{text:'鍋に油を熱し、牛肉を炒める。色が変わったら野菜を加えてさらに炒める。',photos:[]},{text:'だし汁と調味料を加え、落し蓋をして中火で15分煮込む。',photos:[]},{text:'じゃがいもに竹串がスッと通ったら完成。',photos:[]}]},
-    {id:2,name:'鶏のから揚げ',description:'サクサクジューシーな揚げ物。下味をしっかりつけるのがポイント。',category:'鶏肉',imageData:'',
-     ingredients:[{type:'text',text:'鶏もも肉 300g',photoData:''},{type:'text',text:'醤油 大さじ2・酒 大さじ1',photoData:''},{type:'text',text:'片栗粉 大さじ4',photoData:''}],
-     steps:[{text:'鶏肉を一口大に切り、醤油・酒・すりおろしにんにく・しょうがで30分漬け込む。',photos:[]},{text:'片栗粉をまぶし、余分な粉をはたく。',photos:[]},{text:'170℃の油で5分揚げ、取り出して2分休ませる。',photos:[]},{text:'180℃に上げてさらに2分揚げ、カリッとさせたら完成。',photos:[]}]},
-    {id:3,name:'鮭のホイル焼き',description:'野菜と一緒にホイルで包んで蒸し焼きに。ヘルシーで後片付けも楽。',category:'魚介類',imageData:'',
-     ingredients:[{type:'text',text:'鮭の切り身 2切れ',photoData:''},{type:'text',text:'玉ねぎ 1/2個・しめじ 1/2袋',photoData:''},{type:'text',text:'バター 10g・醤油 小さじ1',photoData:''}],
-     steps:[{text:'アルミホイルに玉ねぎとしめじを敷き、鮭をのせる。',photos:[]},{text:'塩こしょうを振り、バターをのせて醤油を回しかける。',photos:[]},{text:'ホイルをしっかり包み、魚焼きグリルで10〜12分焼く。',photos:[]},{text:'ホイルを開いてレモンを添えたら完成。',photos:[]}]}
-  ],
-  nextId:4
+  recipes:[],
+  nextId:1
 };
 const _sb=(window.supabase?window.supabase.createClient('https://twkrqtzelyjecqpjgfib.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3JxdHplbHlqZWNxcGpnZmliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzUwNTgsImV4cCI6MjA5MTQxMTA1OH0.AM7GCMAHBsxGrLB1O1grjTu4Jd5tD6_FXK4wWEis06s'):null);
-let _saveTimer;let _initialized=false;
-function _saveData(){const d={categories:S.categories,recipes:S.recipes,nextId:S.nextId};try{localStorage.setItem('recipesData',JSON.stringify(d));}catch(e){}if(_sb){_sb.from('app_data').upsert({id:1,data:d}).then();}}
-function saveToSupabase(){if(!_initialized)return;clearTimeout(_saveTimer);_saveTimer=setTimeout(_saveData,300);}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&_initialized){clearTimeout(_saveTimer);_saveData();}});
+let _saveTimer;let _initialized=false;let _skipNextSave=false;
+function _saveData(){const d={categories:S.categories,recipes:S.recipes,nextId:S.nextId};try{localStorage.setItem('recipesData',JSON.stringify(d));}catch(e){}if(_sb){_sb.from('app_data').upsert({id:1,data:d}).then(({error})=>{if(error)console.error('save error',error);});}}
+function saveToSupabase(){if(!_initialized)return;if(_skipNextSave){_skipNextSave=false;return;}clearTimeout(_saveTimer);_saveTimer=setTimeout(_saveData,300);}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&_initialized&&!_skipNextSave){clearTimeout(_saveTimer);_saveData();}});
 let FD={};
 
 const ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e;};
@@ -590,7 +580,7 @@ function saveRecipe(){
   else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;S.view='detail';}
   S.modal=null;render();
 }
-(async()=>{let loaded=false;if(_sb){try{const{data,error}=await _sb.from('app_data').select('data').eq('id',1).single();if(!error&&data&&data.data){const d=data.data;if(d.categories)S.categories=d.categories;if(d.recipes)S.recipes=d.recipes;if(d.nextId)S.nextId=d.nextId;loaded=true;}}catch(e){}}if(!loaded){try{const d=localStorage.getItem('recipesData');if(d){const p=JSON.parse(d);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}}catch(e){}}_initialized=true;render();})();
+(async()=>{let loaded=false;if(_sb){try{const{data,error}=await _sb.from('app_data').select('data').eq('id',1).single();if(!error&&data&&data.data){const d=data.data;if(d.categories)S.categories=d.categories;if(d.recipes)S.recipes=d.recipes;if(d.nextId)S.nextId=d.nextId;loaded=true;try{localStorage.setItem('recipesData',JSON.stringify({categories:S.categories,recipes:S.recipes,nextId:S.nextId}));}catch(e){}}}catch(e){}}if(!loaded){try{const raw=localStorage.getItem('recipesData');if(raw){const p=JSON.parse(raw);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;loaded=true;}}catch(e){}}_initialized=true;_skipNextSave=true;render();})();
 </script>
 </body>
 </html>
