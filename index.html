@@ -164,7 +164,9 @@ let S={
   recipes:[],
   nextId:1
 };
-function saveData(){try{localStorage.setItem('recipesData',JSON.stringify({categories:S.categories,recipes:S.recipes,nextId:S.nextId}));}catch(e){}}
+let _db=null;
+function openDB(){return new Promise(res=>{if(_db)return res(_db);const req=indexedDB.open('recipesDB',1);req.onupgradeneeded=e=>{e.target.result.createObjectStore('data');};req.onsuccess=e=>{_db=e.target.result;res(_db);};req.onerror=()=>res(null);});}
+function saveData(){const d={categories:S.categories,recipes:S.recipes,nextId:S.nextId};openDB().then(db=>{if(db){const tx=db.transaction('data','readwrite');tx.objectStore('data').put(d,'recipesData');}try{localStorage.setItem('recipesData',JSON.stringify(d));}catch(e){}});}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveData();});
 let FD={};
 
@@ -590,8 +592,22 @@ function saveRecipe(){
   else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;S.view='detail';}
   S.modal=null;render();
 }
-try{const raw=localStorage.getItem('recipesData');if(raw){const p=JSON.parse(raw);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}}catch(e){}
-render();
+openDB().then(db=>{
+  if(db){
+    const tx=db.transaction('data','readonly');
+    const req=tx.objectStore('data').get('recipesData');
+    req.onsuccess=e=>{
+      const p=e.target.result;
+      if(p){if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}
+      else{try{const raw=localStorage.getItem('recipesData');if(raw){const q=JSON.parse(raw);if(q.categories)S.categories=q.categories;if(q.recipes)S.recipes=q.recipes;if(q.nextId)S.nextId=q.nextId;}}catch(e){}}
+      render();
+    };
+    req.onerror=()=>{try{const raw=localStorage.getItem('recipesData');if(raw){const p=JSON.parse(raw);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}}catch(e){}render();};
+  } else {
+    try{const raw=localStorage.getItem('recipesData');if(raw){const p=JSON.parse(raw);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}}catch(e){}
+    render();
+  }
+});
 </script>
 </body>
 </html>
