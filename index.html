@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Recipes</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #F7F5F0;
@@ -165,11 +164,8 @@ let S={
   recipes:[],
   nextId:1
 };
-const _sb=(window.supabase?window.supabase.createClient('https://twkrqtzelyjecqpjgfib.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a3JxdHplbHlqZWNxcGpnZmliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MzUwNTgsImV4cCI6MjA5MTQxMTA1OH0.AM7GCMAHBsxGrLB1O1grjTu4Jd5tD6_FXK4wWEis06s'):null);
-let _saveTimer;let _initialized=false;let _skipNextSave=false;
-function _saveData(){const d={categories:S.categories,recipes:S.recipes,nextId:S.nextId};try{localStorage.setItem('recipesData',JSON.stringify(d));}catch(e){}if(_sb){_sb.from('app_data').upsert({id:1,data:d}).then(({error})=>{if(error)console.error('save error',error);});}}
-function saveToSupabase(){if(!_initialized)return;if(_skipNextSave){_skipNextSave=false;return;}clearTimeout(_saveTimer);_saveTimer=setTimeout(_saveData,300);}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&_initialized&&!_skipNextSave){clearTimeout(_saveTimer);_saveData();}});
+function saveData(){try{localStorage.setItem('recipesData',JSON.stringify({categories:S.categories,recipes:S.recipes,nextId:S.nextId}));}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveData();});
 let FD={};
 
 const ce=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;return e;};
@@ -183,7 +179,7 @@ function filtered(){
 function readFile(file){return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});}
 
 function render(){
-  saveToSupabase();
+  saveData();
   const app=document.getElementById('app');
   app.innerHTML='';
   app.appendChild(buildSidebar());
@@ -580,7 +576,8 @@ function saveRecipe(){
   else{const i=S.recipes.findIndex(r=>r.id===FD.id);if(i>=0)S.recipes[i]={...FD};S.selId=FD.id;S.view='detail';}
   S.modal=null;render();
 }
-(async()=>{let loaded=false;if(_sb){try{const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000));const fetch=_sb.from('app_data').select('data').eq('id',1).single();const{data,error}=await Promise.race([fetch,timeout]);if(!error&&data&&data.data){const d=data.data;if(d.categories)S.categories=d.categories;if(d.recipes)S.recipes=d.recipes;if(d.nextId)S.nextId=d.nextId;loaded=true;try{localStorage.setItem('recipesData',JSON.stringify({categories:S.categories,recipes:S.recipes,nextId:S.nextId}));}catch(e){}}}catch(e){}}if(!loaded){try{const raw=localStorage.getItem('recipesData');if(raw){const p=JSON.parse(raw);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;loaded=true;}}catch(e){}}_initialized=true;_skipNextSave=true;render();})();
+try{const raw=localStorage.getItem('recipesData');if(raw){const p=JSON.parse(raw);if(p.categories)S.categories=p.categories;if(p.recipes)S.recipes=p.recipes;if(p.nextId)S.nextId=p.nextId;}}catch(e){}
+render();
 </script>
 </body>
 </html>
