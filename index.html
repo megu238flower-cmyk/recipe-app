@@ -245,27 +245,41 @@ function buildSidebar(){
     const box=ce('div','');
     box.style.cssText='background:#fff;border-radius:14px;padding:24px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:12px;';
     const title=ce('div','');title.textContent='バックアップから復元';title.style.cssText='font-weight:500;font-size:15px;';
-    const desc=ce('div','');desc.textContent='バックアップ時にコピーしたデータを貼り付けてください。';desc.style.cssText='font-size:13px;color:#888;';
-    const ta=document.createElement('textarea');
-    ta.placeholder='ここにバックアップデータを貼り付け...';
-    ta.style.cssText='width:100%;height:120px;font-size:12px;border:1px solid #ddd;border-radius:8px;padding:8px;resize:none;font-family:monospace;';
-    const restoreOkBtn=ce('button','btn btn-primary');restoreOkBtn.textContent='復元する';
-    restoreOkBtn.style.cssText='padding:10px;border-radius:8px;background:#C4873A;color:#fff;border:none;font-size:14px;cursor:pointer;';
-    restoreOkBtn.onclick=()=>{
+    function doRestore(json){
       try{
-        const d=JSON.parse(ta.value.trim());
+        const d=JSON.parse(json.trim());
         if(d.categories&&d.recipes){
           S.categories=d.categories;S.recipes=d.recipes;
           S.nextId=d.nextId||Math.max(0,...d.recipes.map(r=>r.id||0))+1;
           S.selCat='すべて';S.selId=null;S.view='list';
           overlay.remove();render();
         }else{alert('バックアップデータの形式が正しくありません。');}
-      }catch{alert('データの読み込みに失敗しました。貼り付けた内容を確認してください。');}
+      }catch{alert('データの読み込みに失敗しました。');}
+    }
+    const fileLabel=document.createElement('label');
+    fileLabel.textContent='📁 ファイルから選択';
+    fileLabel.style.cssText='display:block;padding:12px;border-radius:8px;background:#C4873A;color:#fff;font-size:14px;text-align:center;cursor:pointer;';
+    const fileInput=document.createElement('input');
+    fileInput.type='file';fileInput.accept='.json,application/json,text/plain';
+    fileInput.style.cssText='display:none;';
+    fileInput.onchange=e=>{
+      const file=e.target.files[0];if(!file)return;
+      const reader=new FileReader();
+      reader.onload=ev=>doRestore(ev.target.result);
+      reader.readAsText(file);
     };
+    fileLabel.appendChild(fileInput);
+    const divider=ce('div','');divider.textContent='または';divider.style.cssText='text-align:center;font-size:12px;color:#aaa;';
+    const ta=document.createElement('textarea');
+    ta.placeholder='バックアップデータを直接貼り付け...';
+    ta.style.cssText='width:100%;height:100px;font-size:12px;border:1px solid #ddd;border-radius:8px;padding:8px;resize:none;font-family:monospace;';
+    const restoreOkBtn=ce('button','');restoreOkBtn.textContent='貼り付けデータで復元';
+    restoreOkBtn.style.cssText='padding:10px;border-radius:8px;background:#888;color:#fff;border:none;font-size:14px;cursor:pointer;';
+    restoreOkBtn.onclick=()=>doRestore(ta.value);
     const closeBtn=ce('button','');closeBtn.textContent='キャンセル';
     closeBtn.style.cssText='padding:10px;border-radius:8px;background:#eee;border:none;font-size:14px;cursor:pointer;';
     closeBtn.onclick=()=>overlay.remove();
-    box.appendChild(title);box.appendChild(desc);box.appendChild(ta);box.appendChild(restoreOkBtn);box.appendChild(closeBtn);
+    box.appendChild(title);box.appendChild(fileLabel);box.appendChild(divider);box.appendChild(ta);box.appendChild(restoreOkBtn);box.appendChild(closeBtn);
     overlay.appendChild(box);document.getElementById('app').appendChild(overlay);
   };
   footer.appendChild(restoreBtn);
